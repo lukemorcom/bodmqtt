@@ -1,0 +1,15 @@
+
+services:
+  broker:
+    image: eclipse-mosquitto:2
+    ports:
+      - "1883:1883"
+    volumes:
+      - ./broker/mosquitto.conf:/mosquitto/config/mosquitto.conf
+  publisher:
+    depends_on: [broker]
+    build: ./publisher
+    environment: [
+      "MQTT_BROKER_URL=tcp://broker:1883"
+    ]
+
