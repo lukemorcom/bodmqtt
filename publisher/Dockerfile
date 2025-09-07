@@ -1,13 +1,13 @@
 # Build first
-FROM golang:1.23 AS builder
+FROM golang:1.23.0 AS builder
 WORKDIR /app
 COPY . .
 RUN go mod download
-RUN CGO_ENABLED=0 go build -o publisher .
+RUN go build -o appexec
 
 # Run lightweight
 FROM gcr.io/distroless/base-debian12
 WORKDIR /app
-COPY --from=builder /app/publisher .
+COPY --from=builder /app/appexec .
 
-ENTRYPOINT ["./publisher"]
+ENTRYPOINT ["./appexec"]

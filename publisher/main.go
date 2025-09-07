@@ -2,12 +2,15 @@ package main
 
 import (
 	"fmt"
-	"time"
+	"github.com/lukemorcom/bodmqtt/publisher"
 )
 
 func main() {
-	for {
-		fmt.Println(time.Now(), "Hi from publisher")
-		time.Sleep(5 * time.Second)
+	pub := publisher.NewMQTTPublisher("localhost:1883")
+
+	err := pub.Publish("Hello from main.go", "example/topic")
+
+	if err != nil {
+		fmt.Println("Uwu there was an ewwor")
 	}
 }
