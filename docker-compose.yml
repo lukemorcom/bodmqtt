@@ -9,6 +9,8 @@ services:
   publisher:
     depends_on: [broker]
     build: ./publisher
+    volumes:
+      - ./config.yml:/app/config.yml
     environment: [
       "MQTT_BROKER_URL=tcp://broker:1883"
     ]

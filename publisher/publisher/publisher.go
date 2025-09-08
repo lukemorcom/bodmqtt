@@ -19,4 +19,3 @@ func (p *MQTTPublisher) Publish(message, topic string) error {
 
 	return nil
 }
-

@@ -1,0 +1,9 @@
+apis:
+  - name: localNode
+    url: "http://192.168.0.146"
+    strategy: ping
+
+events:
+  - name: ping_localNode
+    api: "localNode"
+    topic: "homelab/nodes"
