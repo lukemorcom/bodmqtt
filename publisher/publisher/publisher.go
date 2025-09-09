@@ -15,7 +15,9 @@ func NewMQTTPublisher(broker string) *MQTTPublisher {
 }
 
 func (p *MQTTPublisher) Publish(message, topic string) error {
-	fmt.Printf("todo publish here")
+	fmt.Printf("When implemented, this will publish %s to topic %s", message, topic)
+
+	// todo implement
 
 	return nil
 }
