@@ -4,6 +4,7 @@ services:
     image: eclipse-mosquitto:2
     ports:
       - "1883:1883"
+      - "9001:9001"
     volumes:
       - ./broker/mosquitto.conf:/mosquitto/config/mosquitto.conf
   publisher:
@@ -14,4 +15,7 @@ services:
     environment: [
       "MQTT_BROKER_URL=tcp://broker:1883"
     ]
-
+  mqttx-web:
+    image: emqx/mqttx-web
+    ports:
+      - "8080:80"
