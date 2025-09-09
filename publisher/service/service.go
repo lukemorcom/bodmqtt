@@ -1,11 +1,11 @@
 package service
 
 import (
-	"fmt"
 	"github.com/lukemorcom/bodmqtt/config"
 	"github.com/lukemorcom/bodmqtt/publisher"
 	"github.com/lukemorcom/bodmqtt/strategies"
-	"sync"
+	"log"
+	"time"
 )
 
 type Service struct {
@@ -17,41 +17,40 @@ func NewService(cfg *config.Config) *Service {
 }
 
 func (s *Service) Run() {
-	var wg sync.WaitGroup
-
 	pub := publisher.NewMQTTPublisher("localhost:1883")
 
 	for _, event := range s.cfg.Events {
-		wg.Add(1)
-		go workEvent(event, pub, &wg)
+		go workEvent(event, pub)
 	}
 
-	wg.Wait()
+	select {}
 }
 
-func workEvent(event config.Event, pub *publisher.MQTTPublisher, wg *sync.WaitGroup) {
-	var strat strategies.Strategy
+func workEvent(event config.Event, pub *publisher.MQTTPublisher) {
+	for {
+		var strat strategies.Strategy
 
-	switch event.API.Strategy {
-	case config.StrategyPing:
-		strat = strategies.PingStrategy{}
-	default:
-		fmt.Printf("Unexpected strategy name: %s\n", event.API.Strategy)
-		return
+		switch event.API.Strategy {
+		case config.StrategyPing:
+			strat = strategies.PingStrategy{}
+		default:
+			log.Printf("Unexpected strategy name: %s\n", event.API.Strategy)
+			return
+		}
+
+		status, err := strat.Execute(event)
+
+		if err != nil {
+			log.Printf("Error executing event %s: %v\n", event.Name, err)
+			return
+		}
+
+		err = pub.Publish(status, event.Topic)
+
+		if err != nil {
+			log.Printf("Error publishing event %s on topic %s: %v\n", event.Name, event.Topic, err)
+		}
+
+		time.Sleep(time.Duration(event.Interval) * time.Second)
 	}
-
-	status, err := strat.Execute(event)
-
-	if err != nil {
-		fmt.Printf("Error executing event %s: %v\n", event.Name, err)
-		return
-	}
-
-	err = pub.Publish(status, event.Topic)
-
-	if err != nil {
-		fmt.Printf("Error publishing event %s on topic %s: %v\n", event.Name, event.Topic, err)
-	}
-
-	wg.Done()
 }

@@ -14,10 +14,11 @@ type API struct {
 }
 
 type Event struct {
-	Name    string `yaml:"name"`
-	APIname string `yaml:"api"`
-	Topic   string `yaml:"topic"`
-	API     API    `yaml:"-"`
+	Name     string `yaml:"name"`
+	APIname  string `yaml:"api"`
+	Topic    string `yaml:"topic"`
+	Interval int    `yaml:"interval"`
+	API      API    `yaml:"-"`
 }
 
 type Config struct {

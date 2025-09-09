@@ -1,6 +1,6 @@
 package publisher
 
-import "fmt"
+import "log"
 
 type Publisher interface {
 	Publish(message, topic string) error
@@ -15,7 +15,7 @@ func NewMQTTPublisher(broker string) *MQTTPublisher {
 }
 
 func (p *MQTTPublisher) Publish(message, topic string) error {
-	fmt.Printf("When implemented, this will publish %s to topic %s", message, topic)
+	log.Printf("When implemented, this will publish %s to topic %s", message, topic)
 
 	// todo implement
 
