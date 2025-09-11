@@ -17,7 +17,7 @@ func NewService(cfg *config.Config) *Service {
 }
 
 func (s *Service) Run() {
-	pub := publisher.NewMQTTPublisher("localhost:1883")
+	pub := publisher.NewMQTTPublisher("tcp://broker:1883")
 
 	for _, event := range s.cfg.Events {
 		go workEvent(event, pub)

@@ -1,23 +1,40 @@
 package publisher
 
-import "log"
+import (
+	mqtt "github.com/eclipse/paho.mqtt.golang"
+	"log"
+)
 
 type Publisher interface {
 	Publish(message, topic string) error
 }
 
 type MQTTPublisher struct {
-	Broker string
+	Client mqtt.Client
 }
 
 func NewMQTTPublisher(broker string) *MQTTPublisher {
-	return &MQTTPublisher{Broker: broker}
+	opts := mqtt.NewClientOptions()
+	opts.AddBroker(broker)
+	opts.SetClientID("bodmqtt-go-pub")
+
+	client := mqtt.NewClient(opts)
+
+	if token := client.Connect(); token.Wait() && token.Error() != nil {
+		log.Fatalf("Couldn't connect to broker: %v\n", token.Error())
+	}
+
+	log.Printf("Connected to broker on: %s", broker)
+
+	return &MQTTPublisher{Client: client}
 }
 
 func (p *MQTTPublisher) Publish(message, topic string) error {
-	log.Printf("When implemented, this will publish %s to topic %s", message, topic)
+	token := p.Client.Publish(topic, 0, false, message)
 
-	// todo implement
+	log.Printf("Published %s to %s", message, topic)
 
-	return nil
+	token.Wait()
+
+	return token.Error()
 }
